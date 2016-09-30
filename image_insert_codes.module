@@ -1,0 +1,142 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function image_insert_codes_menu() {
+  $items = array();
+
+  $items['admin/config/user-interface/image-insert-codes'] = array(
+    'title' => 'Image Insert Codes',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('image_insert_codes_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'image_insert_codes.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function image_insert_codes_block_info() {
+  $blocks['image-insert-codes'] = array(
+    'info' => t('Image insert codes'),
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function image_insert_codes_block_view($delta = '') {
+  $block = array();
+
+  if ($delta == 'image-insert-codes') {
+    $block['subject'] = t('Image insert codes');
+    $block['content'] = drupal_get_form('image_insert_codes_form');
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function image_insert_codes_preprocess_node(&$vars) {
+  $vars['image_insert_codes'] = drupal_get_form('image_insert_codes_form');
+}
+
+/**
+ * Form builder.
+ */
+function image_insert_codes_form($form, &$form_state) {
+  $node = menu_get_object();
+
+  $code = variable_get('image_insert_codes_code');
+  $field = variable_get('image_insert_codes_field');
+  $image_style = variable_get('image_insert_codes_image_style');
+  $collapsible = variable_get('image_insert_codes_collapsible');
+
+  if (!empty($node->{$field})) {
+    //$uri = $node->field_image['und'][0]['uri'];
+    $uri = $node->{$field}['und'][0]['uri'];
+    $url = file_create_url($uri);
+
+    $preview = theme('image_style', array(
+      'style_name' => $image_style,
+      'path' => $uri,
+      'alt' => $node->title,
+    ));
+
+    //$form = array();
+    if ($collapsible == 1) {
+      $form['codes'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Show codes'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+    }
+
+    if ($code[1]) {
+      $form['codes']['html-full-img'] = array(
+        '#type' => 'textfield',
+        '#title' => t('HTML'),
+        '#value' => '<img src="' . $url . '" alt="' . $node->title . '" />',
+        '#size' => 22,
+        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#description' => t('Full image.'),
+      );
+    }
+
+    if ($code[2]) {
+      $form['codes']['html-clickable'] = array(
+        '#type' => 'textfield',
+        '#title' => t('HTML'),
+        '#value' => '<a href="' . $url . '" title="' . $node->title . '">' . $preview . '</a>',
+        '#size' => 22,
+        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#description' => t('Clickable preview.'),
+      );
+    }
+
+    if ($code[3]) {
+      $form['codes']['bbcode-full-img'] = array(
+        '#type' => 'textfield',
+        '#title' => t('BBCode'),
+        '#value' => '[IMG]' . $url . '[/IMG]',
+        '#size' => 22,
+        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#description' => t('Full image.'),
+      );
+    }
+
+    if ($code[4]) {
+      $form['codes']['bbcode-clickable'] = array(
+        '#type' => 'textfield',
+        '#title' => t('BBCode'),
+        '#value' => '[URL=' . $url . '][IMG]' . image_style_url($image_style, $uri) . '[/IMG][/URL]',
+        '#size' => 22,
+        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#description' => t('Clickable preview.'),
+      );
+    }
+
+    if ($code[5]) {
+      $form['codes']['picture-url'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Picture URL'),
+        '#value' => $url,
+        '#size' => 22,
+        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+      );
+    }
+
+    $form['codes']['#attached']['js'][] = drupal_get_path('module', 'image_insert_codes') . '/image_insert_codes.js';
+    $form['codes']['#attached']['css'][] = drupal_get_path('module', 'image_insert_codes') . '/image_insert_codes.css';
+
+    return $form;
+  }
+}

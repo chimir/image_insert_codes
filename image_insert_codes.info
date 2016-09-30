@@ -1,0 +1,6 @@
+name = Image Insert Codes
+description = Provides a block with quick codes for image insert on websites, blogs, forums, etc.
+core = 7.x
+configure = admin/config/user-interface/image-insert-codes
+package = Image
+dependencies[] = image

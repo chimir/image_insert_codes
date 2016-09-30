@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function image_insert_codes_install() {
+  variable_set('image_insert_codes_code', array(1 => 1, 2, 3, 4, 5));
+  variable_set('image_insert_codes_field', 'field_image');
+  variable_set('image_insert_codes_image_style', 'thumbnail');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function image_insert_codes_uninstall() {
+  variable_del('image_insert_codes_code');
+  variable_del('image_insert_codes_field');
+  variable_del('image_insert_codes_image_style');
+  variable_del('image_insert_codes_collapsible');
+}
