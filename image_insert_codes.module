@@ -55,13 +55,13 @@ function image_insert_codes_form($form, &$form_state) {
   $node = menu_get_object();
 
   $code = variable_get('image_insert_codes_code');
-  $field = variable_get('image_insert_codes_field');
+  $field_name = variable_get('image_insert_codes_field');
   $image_style = variable_get('image_insert_codes_image_style');
   $collapsible = variable_get('image_insert_codes_collapsible');
 
-  if (!empty($node->{$field})) {
+  if (!empty($node->{$field_name})) {
     //$uri = $node->field_image['und'][0]['uri'];
-    $uri = $node->{$field}['und'][0]['uri'];
+    $uri = $node->{$field_name}['und'][0]['uri'];
     $url = file_create_url($uri);
 
     $preview = theme('image_style', array(
