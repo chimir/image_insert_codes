@@ -2,7 +2,7 @@
 
   Drupal.behaviors.imageinsertcodes = {
     attach: function (context, settings) {
-      $('.imageinsertcodes').focus(function(){
+      $('.imageinsertcodes', context).focus(function(){
         this.select();
       });
     }
