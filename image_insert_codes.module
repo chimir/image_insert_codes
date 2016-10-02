@@ -35,7 +35,7 @@ function image_insert_codes_block_view($delta = '') {
 
   if ($delta == 'image-insert-codes') {
     $block['subject'] = t('Image insert codes');
-    $block['content'] = drupal_get_form('image_insert_codes_form');
+    $block['content'] = image_insert_codes_form();
   }
 
   return $block;
@@ -45,13 +45,13 @@ function image_insert_codes_block_view($delta = '') {
  * Implements hook_preprocess_node().
  */
 function image_insert_codes_preprocess_node(&$vars) {
-  $vars['image_insert_codes'] = drupal_get_form('image_insert_codes_form');
+  $vars['image_insert_codes'] = image_insert_codes_form();
 }
 
 /**
  * Form builder.
  */
-function image_insert_codes_form($form, &$form_state) {
+function image_insert_codes_form() {
   $node = menu_get_object();
 
   $code = variable_get('image_insert_codes_code');
@@ -59,7 +59,7 @@ function image_insert_codes_form($form, &$form_state) {
   $image_style = variable_get('image_insert_codes_image_style');
   $collapsible = variable_get('image_insert_codes_collapsible');
 
-  if (!empty($node->{$field_name})) {
+  if (!empty($node->{$field_name}) && node_is_page($node)) {
     //$uri = $node->field_image['und'][0]['uri'];
     $uri = $node->{$field_name}['und'][0]['uri'];
     $url = file_create_url($uri);
@@ -77,6 +77,14 @@ function image_insert_codes_form($form, &$form_state) {
         '#title' => t('Show codes'),
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
+        '#attached' => array(
+          'library' => array(
+            array('system', 'drupal.collapse'),
+          ),
+        ),
+        '#attributes' => array(
+          'class' => array('collapsible', 'collapsed')
+        ),
       );
     }
 
@@ -86,7 +94,7 @@ function image_insert_codes_form($form, &$form_state) {
         '#title' => t('HTML'),
         '#value' => '<img src="' . $url . '" alt="' . $node->title . '" />',
         '#size' => 22,
-        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#attributes' => array('class' => array('imageinsertcodes')),
         '#description' => t('Full image.'),
       );
     }
@@ -97,7 +105,7 @@ function image_insert_codes_form($form, &$form_state) {
         '#title' => t('HTML'),
         '#value' => '<a href="' . $url . '" title="' . $node->title . '">' . $preview . '</a>',
         '#size' => 22,
-        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#attributes' => array('class' => array('imageinsertcodes')),
         '#description' => t('Clickable preview.'),
       );
     }
@@ -108,7 +116,7 @@ function image_insert_codes_form($form, &$form_state) {
         '#title' => t('BBCode'),
         '#value' => '[IMG]' . $url . '[/IMG]',
         '#size' => 22,
-        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#attributes' => array('class' => array('imageinsertcodes')),
         '#description' => t('Full image.'),
       );
     }
@@ -119,7 +127,7 @@ function image_insert_codes_form($form, &$form_state) {
         '#title' => t('BBCode'),
         '#value' => '[URL=' . $url . '][IMG]' . image_style_url($image_style, $uri) . '[/IMG][/URL]',
         '#size' => 22,
-        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#attributes' => array('class' => array('imageinsertcodes')),
         '#description' => t('Clickable preview.'),
       );
     }
@@ -130,7 +138,7 @@ function image_insert_codes_form($form, &$form_state) {
         '#title' => t('Picture URL'),
         '#value' => $url,
         '#size' => 22,
-        '#attributes' => array('class' => array('class' => 'imageinsertcodes')),
+        '#attributes' => array('class' => array('imageinsertcodes')),
       );
     }
 
